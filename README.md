@@ -4,7 +4,7 @@ Despite knowing that the pipeline is supposed to be the power behind PowerShell,
 
 For compatibility with many existing cmdlets, the CSV file should store the server names in a column with the heading 'ComputerName'. That makes the following command possible to determine where a particular service is running. With this you can determine where a service is running in your list of servers and its status. It is unfortunate, but instructive, to note that it is the ComputerName property passed from the Import-Csv to Get-Service, yet MachineName is the property selected from Get-Service. Use Get-Help Get-Service -Full and Get-Service | Get-Member to see these values.
 
-Import-Csv .\Servers.csv | Get-Service winrm | Select MachineName,status,name
+ Import-Csv .\Servers.csv | Get-Service winrm | Select MachineName,status,name
 
 BTW, if you are really determined to play network-wide Whac-A-Notepad, "Import-Csv .\Servers.csv | Get-Process Notepad..." will get you started down that path.
 
@@ -14,7 +14,7 @@ To begin with, a series of information gathering functions could add column afte
 
 The function adds three columns to the objects on the pipeline: Ping, WMI and PSRemote. Each is populated True or False depending on whether the server passes that particular test. The following command will run the three tests on all of the servers in the CSV file. As an added bonus, you get the last BootTime for each server as it is returned by the WMI query used to test WMIs availability.
 
-Get-MyServerCollection | Test-ServerConnectionOnPipeline | ft -autosize
+    Get-MyServerCollection | Test-ServerConnectionOnPipeline | ft -autosize
 
     ComputerName Role Location Ping  WMI PSRemote BootTime             
     ------------ ---- -------- ----  --- -------- --------             
@@ -49,7 +49,7 @@ The example provided here includes the following functions and added columns:
 
 So if you want a report on the OS version for all of your servers in Washington, use this:
 
-Get-MyServerCollection -Location WA | Test-ServerConnectionOnPipeline | Get-OSCaptionOnPipeline | Select ComputerName, OSVersion | ft
+ Get-MyServerCollection -Location WA | Test-ServerConnectionOnPipeline | Get-OSCaptionOnPipeline | Select ComputerName, OSVersion | ft
 
 Note that the last function, Get-VolumeInfoOnPipeline adds rows to the output in addition to columns. That is, there is a line for C:, D:, E: as required. This creates some interesting challenges and I leave it to you to decide if you like my solution or not.
 
