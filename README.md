@@ -1,4 +1,4 @@
-# Big Pipeline Solution
+# The PowerShell Big Pipeline Solution
 
 Despite knowing that the pipeline is supposed to be the power behind PowerShell, I have struggled with it. Like everyone else, I have seen the silly pipeline tricks that whack rogue instances of Notepad as if that basic editor were the great scripting enemy. Recently, I started a contract where I was handed a listing of servers that were mine to administer and look after. There were categories within the list and I realized that by converting it to a CSV file, I could use Import-Csv to get an instant list of servers or even a subset of servers. It occurred to me that this would be very useful as the first item on the left of a pipeline.
 
