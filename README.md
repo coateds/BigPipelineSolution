@@ -16,13 +16,13 @@ The function adds three columns to the objects on the pipeline: Ping, WMI and PS
 
 Get-MyServerCollection | Test-ServerConnectionOnPipeline | ft -autosize
 
-ComputerName Role Location Ping  WMI PSRemote BootTime             
------------- ---- -------- ----  --- -------- --------             
-Server1      DC   WA       True True     True 12/28/2016 2:40:21 PM
-Server2      Web  WA       True True     True 12/28/2016 2:40:22 PM
-Server3      Web  AZ       True True     True 12/28/2016 2:40:23 PM
-Server4      SQL  WA       True True     True 12/28/2016 2:40:23 PM
-Server5      SQL  AZ       True True     True 12/28/2016 2:40:24 PM
+    ComputerName Role Location Ping  WMI PSRemote BootTime             
+    ------------ ---- -------- ----  --- -------- --------             
+    Server1      DC   WA       True True     True 12/28/2016 2:40:21 PM
+    Server2      Web  WA       True True     True 12/28/2016 2:40:22 PM
+    Server3      Web  AZ       True True     True 12/28/2016 2:40:23 PM
+    Server4      SQL  WA       True True     True 12/28/2016 2:40:23 PM
+    Server5      SQL  AZ       True True     True 12/28/2016 2:40:24 PM
 
 Note that the output is just like any other collection of objects in PowerShell. The output can be piped to Select-Object, Where-Object and Export-Csv as well as all of the other standard cmdlets PS employs.
 
