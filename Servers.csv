@@ -1,0 +1,6 @@
+ComputerName,Role,Location
+Server1,DC,WA
+Server2,Web,WA
+Server3,Web,AZ
+Server4,SQL,WA
+Server5,SQL,AZ
