@@ -49,25 +49,15 @@ The example provided here includes the following functions and added columns:
 
 So if you want a report on the OS version for all of your servers in Washington, use this:
 
- Get-MyServerCollection -Location WA | Test-ServerConnectionOnPipeline | Get-OSCaptionOnPipeline | Select ComputerName, OSVersion | ft
+    Get-MyServerCollection -Location WA | Test-ServerConnectionOnPipeline | Get-OSCaptionOnPipeline | Select ComputerName, OSVersion | ft
 
 Note that the last function, Get-VolumeInfoOnPipeline adds rows to the output in addition to columns. That is, there is a line for C:, D:, E: as required. This creates some interesting challenges and I leave it to you to decide if you like my solution or not.
 
 Finally, there is a function, Get-ServerObjectCollection, that allows the conversion of a simple list of server names into a collection of objects as if from a CSV file with just one column heading, ComputerName. Use the following command to start the pipeline for an arbitrary list of servers. Examples are provided for the function to include ways to read a txt file and even use Active Directory.
 
-('Server2','Server4') | Get-ServerObjectCollection | Test-ServerConnectionOnPipeline | ft
+    ('Server2','Server4') | Get-ServerObjectCollection | Test-ServerConnectionOnPipeline | ft
 
-Take a very close look at this last function for some important clues to using the pipeline. First, in the Param block, the function accepts the whole 
-
-object from the pipeline, but in this case it has specifically cast the object as a string. None of the other functions in this example explicitly cast 
-
-the input object. Second, the Process block, which runs once for every object coming into the pipeline creates a generic object out of a hash table with 
-
-just one key pair. This object is then passed from function to function along the pipeline. Hence the Param block for all of the other functions do not 
-
-cast the incoming object. It is important to realize that the output of the function is a single object. It is only at the end that PowerShell outputs 
-
-all of the objects as a collection of objects that can be assigned to a variable, output to the screen or exported as a CSV file.
+Take a very close look at this last function for some important clues to using the pipeline. First, in the Param block, the function accepts the whole object from the pipeline, but in this case it has specifically cast the object as a string. None of the other functions in this example explicitly cast the input object. Second, the Process block, which runs once for every object coming into the pipeline creates a generic object out of a hash table with just one key pair. This object is then passed from function to function along the pipeline. Hence the Param block for all of the other functions do not cast the incoming object. It is important to realize that the output of the function is a single object. It is only at the end that PowerShell outputs all of the objects as a collection of objects that can be assigned to a variable, output to the screen or exported as a CSV file.
 
 
     Param(
@@ -85,11 +75,9 @@ all of the objects as a collection of objects that can be assigned to a variable
         }
 
 
-I think it is useful to think of the pipeline as a foreach loop with extra features. The following command illustrates this point. A Foreach cmdlet has a 
+I think it is useful to think of the pipeline as a foreach loop with extra features. The following command illustrates this point. A Foreach cmdlet has a Begin, Process and End script block just like an advanced function.
 
-Begin, Process and End script block just like an advanced function.
-
-(1..10) | % -Begin {'Begin'} -Process {$_} -End {'End'}
+    (1..10) | % -Begin {'Begin'} -Process {$_} -End {'End'}
 
 To add a column to each object the function has this basic process. 
 
@@ -101,31 +89,12 @@ To add a column to each object the function has this basic process.
 
 The new properties appear as new columns when PowerShell assembles all of the objects into a collection at the end.
 
-Conclusion and possible next steps. This started as an exercise in learning how to use the pipeline by scripting functions to be used on the pipeline. 
+Conclusion and possible next steps. This started as an exercise in learning how to use the pipeline by scripting functions to be used on the pipeline. Checkout this oneliner for a big capacity and configuration report on a list of servers. The biggest problem is adding new rows for servers that have more than one fixed drive. The extra rows are fine for just the one list of resources per server, but this will break down if you were to add another item for which there might be multiple rows. Getting IP address for servers that have more than one NIC for instance. Perhaps someone out there has an idea?
 
-checkout this oneliner for a big capacity and configuration report on a list of servers. The biggest problem is adding new rows for servers that have 
+    Get-MyServerCollection | Test-ServerConnectionOnPipeline | Get-OSCaptionOnPipeline | Get-TimeZoneOnPipeline | 
+    Get-TotalMemoryOnPipeline | Get-MachineModelOnPipeline | Get-ProcInfoOnPipeline | Get-VolumeInfoOnPipeline -ReportMode | 
+    Select ComputerName,OSVersion,TotalMemory,MachineModel,TotalProcs,ProcName,Cores,Volumes,DriveType,Capacity,PctFree | Where   
+    DriveType -eq 3 | Export-Csv -path .\ServerSpecs.csv -NoTypeInformation
 
-more than one fixed drive. The extra rows are fine for just the one list of resources per server, but this will break down if you were to add another 
-
-item for which there might be multiple rows. Getting IP address for servers that have more than one NIC for instance. Perhaps someone out there has an 
-
-idea?
-
-Get-MyServerCollection | Test-ServerConnectionOnPipeline | Get-OSCaptionOnPipeline | Get-TimeZoneOnPipeline | Get-TotalMemoryOnPipeline | Get-
-
-MachineModelOnPipeline | Get-ProcInfoOnPipeline | Get-VolumeInfoOnPipeline -ReportMode | Select 
-
-ComputerName,OSVersion,TotalMemory,MachineModel,TotalProcs,ProcName,Cores,Volumes,DriveType,Capacity,PctFree | Where DriveType -eq 3 | Export-Csv -path 
-
-.\ServerSpecs.csv -NoTypeInformation
-
-Another way to use this would be to log the results of taking some action on a list of servers that would be exported as a CSV. At a minimum this could 
-
-be used to note the changes not made due to errors. It could also be used to create an 'undo' table. Consider the idea where a registry change is desired 
-
-on a large number of servers. Start with a CSV file of the servers and add columns for existing value and type plus a success/fail column. The resulting 
-
-collection of objects could be exported to a new CSV that could be used to remediate problems and even run an undo to set everything back to what it was 
-
-originally.
+Another way to use this would be to log the results of taking some action on a list of servers that would be exported as a CSV. At a minimum this could be used to note the changes not made due to errors. It could also be used to create an 'undo' table. Consider the idea where a registry change is desired on a large number of servers. Start with a CSV file of the servers and add columns for existing value and type plus a success/fail column. The resulting collection of objects could be exported to a new CSV that could be used to remediate problems and even run an undo to set everything back to what it was originally.
 
